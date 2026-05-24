@@ -1,0 +1,65 @@
+{
+  "home": {
+    "title": "Rulez",
+    "subtitle": "Regelkunde für den Sport",
+    "selectDeck": "Wähle ein Deck, um zu lernen"
+  },
+  "deck": {
+    "startQuiz": "Quiz starten",
+    "overview": "Kartenübersicht",
+    "settings": "Einstellungen",
+    "edition": "Ausgabe",
+    "progress": "Fortschritt",
+    "cards": "Karten",
+    "resumeSession": "Letzte Session fortsetzen"
+  },
+  "status": {
+    "new": "Neu",
+    "review": "Wiederholen",
+    "done": "Erledigt"
+  },
+  "quizSetup": {
+    "title": "Quiz-Einstellungen",
+    "order": "Reihenfolge",
+    "sequential": "Sequenziell",
+    "random": "Zufällig",
+    "filterArticle": "Nach Artikel filtern",
+    "filterType": "Nach Typ filtern",
+    "allArticles": "Alle Artikel",
+    "allTypes": "Alle Typen",
+    "start": "Quiz starten",
+    "cardsSelected": "{{count}} Karte(n) ausgewählt"
+  },
+  "quiz": {
+    "tapToFlip": "Tippen zum Aufdecken",
+    "cardOf": "{{current}} / {{total}}",
+    "noCards": "Keine Karten entsprechen den Filtern.",
+    "sessionDone": "Session abgeschlossen!",
+    "ruling": "Entscheidung"
+  },
+  "actions": {
+    "accept": "Verstanden",
+    "acceptAndOverview": "Verstanden & Übersicht",
+    "markReview": "Wiederholen",
+    "goBack": "Zurück"
+  },
+  "overview": {
+    "title": "Kartenübersicht",
+    "doneOf": "{{done}} / {{total}} erledigt"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "App-Sprache",
+    "resetProgress": "Fortschritt zurücksetzen",
+    "resetConfirmTitle": "Fortschritt zurücksetzen",
+    "resetConfirmMessage": "Alle Karten dieses Decks werden auf 'Neu' zurückgesetzt. Bist du sicher?",
+    "resetConfirm": "Zurücksetzen",
+    "resetCancel": "Abbrechen",
+    "resetDone": "Fortschritt wurde zurückgesetzt.",
+    "dangerZone": "Gefahrenbereich"
+  },
+  "common": {
+    "back": "Zurück",
+    "backToStart": "Zur Startseite"
+  }
+}

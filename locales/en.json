@@ -1,0 +1,65 @@
+{
+  "home": {
+    "title": "Rulez",
+    "subtitle": "Sport Rule Learning",
+    "selectDeck": "Select a deck to start learning"
+  },
+  "deck": {
+    "startQuiz": "Start Quiz",
+    "overview": "Card Overview",
+    "settings": "Settings",
+    "edition": "Edition",
+    "progress": "Progress",
+    "cards": "cards",
+    "resumeSession": "Resume last session"
+  },
+  "status": {
+    "new": "New",
+    "review": "Review",
+    "done": "Done"
+  },
+  "quizSetup": {
+    "title": "Quiz Setup",
+    "order": "Card Order",
+    "sequential": "Sequential",
+    "random": "Random",
+    "filterArticle": "Filter by Article",
+    "filterType": "Filter by Type",
+    "allArticles": "All Articles",
+    "allTypes": "All Types",
+    "start": "Start Quiz",
+    "cardsSelected": "{{count}} card(s) selected"
+  },
+  "quiz": {
+    "tapToFlip": "Tap to reveal answer",
+    "cardOf": "{{current}} / {{total}}",
+    "noCards": "No cards match your filters.",
+    "sessionDone": "Session complete!",
+    "ruling": "Ruling"
+  },
+  "actions": {
+    "accept": "Got it",
+    "acceptAndOverview": "Got it & Overview",
+    "markReview": "Review later",
+    "goBack": "Go back"
+  },
+  "overview": {
+    "title": "Card Overview",
+    "doneOf": "{{done}} / {{total}} done"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "App Language",
+    "resetProgress": "Reset Progress",
+    "resetConfirmTitle": "Reset Progress",
+    "resetConfirmMessage": "This will reset all card progress for this deck back to New. Are you sure?",
+    "resetConfirm": "Reset",
+    "resetCancel": "Cancel",
+    "resetDone": "Progress has been reset.",
+    "dangerZone": "Danger Zone"
+  },
+  "common": {
+    "back": "Back",
+    "backToStart": "Back to Start"
+  }
+}
