@@ -23,7 +23,13 @@ export function useQuizSession(cards: Card[], filters: QuizFilters): Card[] {
     let result = cards;
 
     if (filters.articles.length > 0) {
-      result = result.filter((c) => filters.articles.includes(c.article));
+      // articles contains top-level keys (e.g. "3", "12").
+      // Match the card's article exactly OR as a sub-article (e.g. "3.1", "3.1.2").
+      result = result.filter((c) =>
+        filters.articles.some(
+          (a) => c.article === a || c.article.startsWith(a + '.')
+        )
+      );
     }
 
     if (filters.types.length > 0) {

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeck } from '../../hooks/useDeck';
@@ -14,8 +14,10 @@ export default function DeckHomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const deck = useDeck(deckId);
-  const { progress, loaded } = useProgress(deckId);
+  const { progress, loaded, reload } = useProgress(deckId);
   const [resumeCardId, setResumeCardId] = useState<number | null>(null);
+
+  useFocusEffect(useCallback(() => { reload(); }, [reload]));
 
   useEffect(() => {
     loadLastSession().then((s) => {
@@ -46,7 +48,7 @@ export default function DeckHomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/')} style={styles.backBtn}>
           <Text style={styles.backText}>← {t('common.back')}</Text>
         </TouchableOpacity>
 

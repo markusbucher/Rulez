@@ -7,7 +7,7 @@ export function useProgress(deckId: string) {
   const [progress, setProgress] = useState<Record<number, CardStatus>>({});
   const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
+  const reload = useCallback(() => {
     AsyncStorage.getItem(STORAGE_KEYS.progress).then((raw) => {
       if (raw) {
         const all: AppProgress = JSON.parse(raw);
@@ -16,6 +16,8 @@ export function useProgress(deckId: string) {
       setLoaded(true);
     });
   }, [deckId]);
+
+  useEffect(() => { reload(); }, [reload]);
 
   const updateCardStatus = useCallback(
     async (cardId: number, status: CardStatus) => {
@@ -45,7 +47,7 @@ export function useProgress(deckId: string) {
     [progress]
   );
 
-  return { progress, loaded, updateCardStatus, resetProgress, getStatus };
+  return { progress, loaded, updateCardStatus, resetProgress, getStatus, reload };
 }
 
 export async function saveLastSession(session: LastSession): Promise<void> {

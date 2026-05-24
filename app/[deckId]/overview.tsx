@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDeck } from '../../hooks/useDeck';
@@ -13,7 +13,9 @@ export default function OverviewScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const deck = useDeck(deckId);
-  const { getStatus, loaded } = useProgress(deckId);
+  const { getStatus, loaded, reload } = useProgress(deckId);
+
+  useFocusEffect(useCallback(() => { reload(); }, [reload]));
 
   const grouped = useMemo(() => {
     if (!deck) return [];

@@ -35,7 +35,9 @@
     "cardOf": "{{current}} / {{total}}",
     "noCards": "Keine Karten entsprechen den Filtern.",
     "sessionDone": "Session abgeschlossen!",
-    "ruling": "Entscheidung"
+    "ruling": "Entscheidung",
+    "backToOverview": "Zur Übersicht",
+    "forward": "Weiter"
   },
   "actions": {
     "accept": "Verstanden",

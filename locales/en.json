@@ -35,7 +35,9 @@
     "cardOf": "{{current}} / {{total}}",
     "noCards": "No cards match your filters.",
     "sessionDone": "Session complete!",
-    "ruling": "Ruling"
+    "ruling": "Ruling",
+    "backToOverview": "Back to overview",
+    "forward": "Forward"
   },
   "actions": {
     "accept": "Got it",

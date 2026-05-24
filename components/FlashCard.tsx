@@ -10,20 +10,28 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../constants/colors';
 import CardImages from './CardImage';
+import CardStatusBadge from './CardStatusBadge';
 import type { FlashCard as FlashCardType } from '../data/types';
+import type { CardStatus } from '../data/types';
+
+// A tap is: finger moved < TAP_SLOP pixels AND touch lasted < TAP_MS ms
+const TAP_SLOP = 8;
+const TAP_MS   = 250;
 
 interface Props {
   card: FlashCardType;
+  status?: CardStatus;
   onFlipped?: () => void;
+  onTapBack?: () => void;
 }
 
-export default function FlashCard({ card, onFlipped }: Props) {
+export default function FlashCard({ card, status = 'new', onFlipped, onTapBack }: Props) {
   const { t } = useTranslation();
   const [flipped, setFlipped] = useState(false);
   const opacity = useRef(new Animated.Value(1)).current;
+  const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
 
-  const handlePress = () => {
-    if (flipped) return;
+  const flip = () => {
     Animated.timing(opacity, {
       toValue: 0,
       duration: 150,
@@ -39,39 +47,81 @@ export default function FlashCard({ card, onFlipped }: Props) {
     });
   };
 
+  const handleTouchStart = (e: any) => {
+    touchStart.current = {
+      x: e.nativeEvent.pageX,
+      y: e.nativeEvent.pageY,
+      time: Date.now(),
+    };
+  };
+
+  const handleTouchEnd = (e: any) => {
+    if (!touchStart.current || flipped) return;
+    const dx = Math.abs(e.nativeEvent.pageX - touchStart.current.x);
+    const dy = Math.abs(e.nativeEvent.pageY - touchStart.current.y);
+    const dt = Date.now() - touchStart.current.time;
+    touchStart.current = null;
+    if (dx < TAP_SLOP && dy < TAP_SLOP && dt < TAP_MS) {
+      flip();
+    }
+  };
+
   if (!flipped) {
     return (
-      <TouchableOpacity onPress={handlePress} activeOpacity={0.9} style={styles.wrapper}>
-        <Animated.View style={[styles.card, styles.front, { opacity }]}>
-          <View style={styles.meta}>
-            <View style={styles.articleInfo}>
-              {card.articleTitle && <Text style={styles.articleTitle}>{card.articleTitle}</Text>}
-              <Text style={styles.metaText}>Art. {card.article}</Text>
-            </View>
+      <Animated.View
+        style={[styles.wrapper, styles.card, styles.front, { opacity }]}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <View style={styles.meta}>
+          <View style={styles.articleInfo}>
+            {card.articleTitle && <Text style={styles.articleTitle}>{card.articleTitle}</Text>}
+            <Text style={styles.metaText}>Art. {card.article}</Text>
+          </View>
+          <View style={styles.metaRight}>
+            <CardStatusBadge status={status} size="small" />
             <Text style={styles.metaText}>{card.type}</Text>
           </View>
-          <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <CardImages images={card.imageFront} />
-            <Text style={styles.frontText}>{card.front}</Text>
-          </ScrollView>
-          <Text style={styles.hint}>{t('quiz.tapToFlip')}</Text>
-        </Animated.View>
-      </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <CardImages images={card.imageFront} />
+          <Text style={styles.frontText}>{card.front}</Text>
+        </ScrollView>
+
+        <Text style={styles.hint}>{t('quiz.tapToFlip')}</Text>
+      </Animated.View>
     );
   }
 
   return (
-    <Animated.View style={[styles.wrapper, styles.card, styles.back, { opacity }]}>
+    <Animated.View
+      style={[styles.wrapper, styles.card, styles.back, { opacity }]}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={(e) => {
+        if (!touchStart.current) return;
+        const dx = Math.abs(e.nativeEvent.pageX - touchStart.current.x);
+        const dy = Math.abs(e.nativeEvent.pageY - touchStart.current.y);
+        const dt = Date.now() - touchStart.current.time;
+        touchStart.current = null;
+        if (dx < TAP_SLOP && dy < TAP_SLOP && dt < TAP_MS) {
+          onTapBack?.();
+        }
+      }}
+    >
       <View style={styles.meta}>
         <View style={styles.articleInfo}>
           {card.articleTitle && <Text style={styles.articleTitle}>{card.articleTitle}</Text>}
           <Text style={styles.metaText}>Art. {card.article}</Text>
         </View>
-        <Text style={[styles.metaText, { color: Colors.primary }]}>{t('quiz.ruling')}</Text>
+        <View style={styles.metaRight}>
+          <CardStatusBadge status={status} size="small" />
+          <Text style={[styles.metaText, { color: Colors.primary }]}>{t('quiz.ruling')}</Text>
+        </View>
       </View>
       <ScrollView
         style={styles.scroll}
@@ -104,9 +154,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
-  articleInfo: {
-    flex: 1,
-  },
+  articleInfo: { flex: 1 },
+  metaRight: { alignItems: 'flex-end', gap: 4 },
   articleTitle: {
     fontSize: 11,
     color: Colors.primary,

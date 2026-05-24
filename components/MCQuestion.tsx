@@ -2,10 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { Colors } from '../constants/colors';
 import CardImages from './CardImage';
-import type { MCCard } from '../data/types';
+import CardStatusBadge from './CardStatusBadge';
+import type { MCCard, CardStatus } from '../data/types';
 
 interface Props {
   card: MCCard;
+  status?: CardStatus;
   shuffleOptions?: boolean;
   onAnswered?: () => void;
 }
@@ -19,7 +21,7 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-export default function MCQuestion({ card, shuffleOptions = false, onAnswered }: Props) {
+export default function MCQuestion({ card, status = 'new', shuffleOptions = false, onAnswered }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
 
   const options = useMemo(
@@ -54,7 +56,10 @@ export default function MCQuestion({ card, shuffleOptions = false, onAnswered }:
           {card.articleTitle && <Text style={styles.articleTitle}>{card.articleTitle}</Text>}
           <Text style={styles.metaText}>Art. {card.article}</Text>
         </View>
-        <Text style={styles.metaText}>{card.type}</Text>
+        <View style={styles.metaRight}>
+          <CardStatusBadge status={status} size="small" />
+          <Text style={styles.metaText}>{card.type}</Text>
+        </View>
       </View>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <CardImages images={card.imageFront} />
@@ -108,6 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   articleInfo: { flex: 1 },
+  metaRight: { alignItems: 'flex-end', gap: 4 },
   articleTitle: { fontSize: 11, color: Colors.primary, fontWeight: '600', marginBottom: 2 },
   options: { gap: 10 },
   option: {

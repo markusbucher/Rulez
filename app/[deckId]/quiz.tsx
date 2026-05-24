@@ -61,6 +61,7 @@ export default function QuizScreen() {
   const [index, setIndex] = useState(getStartIndex);
   const [answered, setAnswered] = useState(false);
   const [cardKey, setCardKey] = useState(0);
+  const [flashAccept, setFlashAccept] = useState(false);
 
   const card = sessionCards[index];
 
@@ -100,6 +101,14 @@ export default function QuizScreen() {
     }
   }, [card, index, sessionCards.length, updateCardStatus, saveAndGo, router, deckId]);
 
+  const handleTapBack = useCallback(() => {
+    setFlashAccept(true);
+    setTimeout(() => {
+      setFlashAccept(false);
+      handleAccept();
+    }, 200);
+  }, [handleAccept]);
+
   // On the answer screen: un-flip back to the question
   const handleUnflip = useCallback(() => {
     setAnswered(false);
@@ -110,10 +119,18 @@ export default function QuizScreen() {
   const handlePreviousCard = useCallback(() => {
     if (index > 0) {
       saveAndGo(index - 1);
-    } else {
+    } else if (router.canGoBack()) {
       router.back();
+    } else {
+      router.replace(`/${deckId}`);
     }
-  }, [index, saveAndGo, router]);
+  }, [index, saveAndGo, router, deckId]);
+
+  const handleNextCard = useCallback(() => {
+    if (index < sessionCards.length - 1) {
+      saveAndGo(index + 1);
+    }
+  }, [index, sessionCards.length, saveAndGo]);
 
   if (!deck || sessionCards.length === 0) {
     return (
@@ -149,14 +166,30 @@ export default function QuizScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           onPress={answered ? handleUnflip : handlePreviousCard}
-          style={styles.backBtn}
+          style={styles.navBtn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.backText}>← {t('actions.goBack')}</Text>
+          <Text style={styles.navText}>← {t('actions.goBack')}</Text>
         </TouchableOpacity>
-        <Text style={styles.counter}>
-          {t('quiz.cardOf', { current: index + 1, total: sessionCards.length })}
-        </Text>
+
+        <TouchableOpacity
+          style={styles.overviewBtn}
+          onPress={() => router.replace(`/${deckId}/overview`)}
+        >
+          <Text style={styles.overviewBtnText}>{t('quiz.backToOverview')}</Text>
+          <Text style={styles.counter}>{t('quiz.cardOf', { current: index + 1, total: sessionCards.length })}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleNextCard}
+          style={[styles.navBtn, styles.navBtnRight]}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          disabled={index >= sessionCards.length - 1}
+        >
+          <Text style={[styles.navText, index >= sessionCards.length - 1 && styles.navTextDisabled]}>
+            {t('quiz.forward')} →
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.cardArea}>
@@ -164,12 +197,15 @@ export default function QuizScreen() {
           <FlashCard
             key={cardKey}
             card={card as FlashCardType}
+            status={getStatus(card.id)}
             onFlipped={() => setAnswered(true)}
+            onTapBack={answered ? handleTapBack : undefined}
           />
         ) : (
           <MCQuestion
             key={cardKey}
             card={card as MCCard}
+            status={getStatus(card.id)}
             onAnswered={() => setAnswered(true)}
           />
         )}
@@ -181,6 +217,7 @@ export default function QuizScreen() {
             onAccept={handleAccept}
             onAcceptAndOverview={handleAcceptAndOverview}
             onMarkReview={handleMarkReview}
+            flashAccept={flashAccept}
           />
         </View>
       )}
@@ -194,13 +231,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingTop: 12,
     paddingBottom: 8,
+    gap: 6,
   },
-  backBtn: {},
-  backText: { color: Colors.primary, fontSize: 15 },
-  counter: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
+  navBtn: { minWidth: 70 },
+  navBtnRight: { alignItems: 'flex-end' },
+  navText: { color: Colors.primary, fontSize: 14 },
+  navTextDisabled: { opacity: 0.3 },
+  overviewBtn: { flex: 1, alignItems: 'center' },
+  overviewBtnText: {
+    color: Colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  counter: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400', marginTop: 2 },
   cardArea: { flex: 1, paddingHorizontal: 16 },
   actions: { padding: 16 },
   endScreen: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 12 },
